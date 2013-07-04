@@ -1,0 +1,1 @@
+Contains some utility methods built on [ScalaTest](http://www.scalatest.org/).
