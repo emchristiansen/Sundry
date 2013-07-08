@@ -4,9 +4,12 @@ import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalacheck.Gen
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
 ////////////////////////////////////////////////////////////////////////////////
 
+@RunWith(classOf[JUnitRunner])
 class TestFunGeneratorSuite extends FunGeneratorSuite {
   test("a vanilla unit test", InstantTest) {
     val x = 1
@@ -21,6 +24,7 @@ class TestFunGeneratorSuite extends FunGeneratorSuite {
   }
 }
 
+@RunWith(classOf[JUnitRunner])
 class TestFunGeneratorConfigSuite extends FunGeneratorConfigSuite {
   test("make sure the ConfigMap exists for a vanilla unit test") { configMap =>
     assert(configMap.toString.contains("Map"))
