@@ -3,33 +3,37 @@ package scalatestextra
 import org.scalatest.Tag
 
 ////////////////////////////////////////////////////////////////////////////////
+// Optional tags which can be used to select which tests to run.
+// For example, a user may decide to run only the fast tests, or may decide
+// not to run tests which require interaction.
+////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Less than 0.1s.
+ * Tests which run for less than 0.1s.
  */
 object InstantTest extends Tag("nebula.InstantTest")
 
 /**
- * Less than 1s.
+ * Tests which run for less than 1s.
  */
 object FastTest extends Tag("nebula.FastTest")
 
 /**
- * Less than 10s.
+ * Tests which run for less than 10s.
  */
 object MediumTest extends Tag("nebula.MediumTest")
 
 /**
- * Less than 100s.
+ * Tests which run for less than 100s.
  */
 object SlowTest extends Tag("nebula.SlowTest")
 
 /**
- * Requires the user to inspect or do something (not fully automatic).
+ * Test which require the user to inspect or do something (not fully automatic).
  */
 object InteractiveTest extends Tag("nebula.InteractiveTest")
 
 /**
- * External dataset required to run test.
+ * Tests which require an external dataset.
  */
 object DatasetTest extends Tag("nebula.DatasetTest")

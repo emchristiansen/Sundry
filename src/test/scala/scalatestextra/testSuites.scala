@@ -30,7 +30,7 @@ class TestFunGeneratorConfigSuite extends FunGeneratorConfigSuite {
     assert(configMap.toString.contains("Map"))
   }
 
-  test("make sure the ConfigMap exists for a generator drivent test") {
+  test("make sure the ConfigMap exists for a generator driven test") {
     configMap =>
       val evenInts = for (n <- Gen.choose(-1000, 1000)) yield 2 * n
       forAll(evenInts) { x =>
