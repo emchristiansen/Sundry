@@ -22,9 +22,9 @@ trait FunGeneratorConfigSuite extends fixture.FunSuite with fixture.ConfigMapFix
  * Expects the user to pass |datasetRoot|, for tests which require
  * access to additional data.
  */
-trait Dataset {
-  def datasetRoot(implicit configMap: Map[String, Any]): File = { 
-    val file = new File(configMap("datasetRoot").toString)
+trait DataTest {
+  def dataRoot(implicit configMap: Map[String, Any]): File = { 
+    val file = new File(configMap("dataRoot").toString)
     assert(file.isDirectory)
     file
   }
@@ -34,7 +34,7 @@ trait Dataset {
  * Expects the user to pass |logRoot|, for test which create logs, for example
  * interactive tests which log images and require the user to eyeball them.
  */
-trait Logging {
+trait LoggingTest {
   def logRoot(implicit configMap: Map[String, Any]): File = { 
     val file = new File(configMap("logRoot").toString)
     assert(file.isDirectory)
