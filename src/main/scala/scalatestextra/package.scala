@@ -1,0 +1,1 @@
+package object scalatestextra extends Near
