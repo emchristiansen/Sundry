@@ -1,6 +1,6 @@
 name := "scalatest-extra"
 
-version := "0.1-SNAPSHOT"
+version := "0.2-SNAPSHOT"
 
 scalaVersion := "2.10.2"
 
@@ -11,6 +11,8 @@ libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.10.1"
 libraryDependencies += "junit" % "junit" % "4.11"
 
 libraryDependencies += "org.spire-math" %% "spire" % "0.5.0"
+
+libraryDependencies += "org.apache.commons" % "commons-io" % "1.3.2"
 
 organization := "emchristiansen"
 
