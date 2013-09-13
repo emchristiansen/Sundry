@@ -10,9 +10,7 @@ import org.scalatest.junit.JUnitRunner
 import scala.pickling._
 import scala.pickling.binary._
 
-//import scala.slick.driver.H2Driver.simple._
 import scala.slick.driver.SQLiteDriver.simple._
-//import Database.threadLocalSession
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -65,6 +63,11 @@ class TestPersistentMap extends FunGeneratorSuite {
     assert(map.get(key1) == Some(value2))
     assert(map.get(key2) == Some(value2))
     assert(map.toSet == Set(kv12, kv22))
+    
+    // Now let's make sure this map is really persistent.
+    val map2 = PersistentMap.connect[MyKey, MyValue]("test", database).get
+    
+    assert(map == map2)
   }
 
   test("a generator driven test", InstantTest) {
