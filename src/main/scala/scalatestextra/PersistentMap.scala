@@ -18,7 +18,7 @@ import scala.slick.jdbc.meta.MTable
 
 ///////////////////////////////////////////
 
-class TypeTable(name: String) extends Table[(String, String)](name) {
+case class TypeTable(name: String) extends Table[(String, String)](name) {
   def keyType = column[String]("keyType")
 
   def valueType = column[String]("valueType")
@@ -26,7 +26,7 @@ class TypeTable(name: String) extends Table[(String, String)](name) {
   def * = keyType ~ valueType
 }
 
-class RecordsTable[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler: FastTypeTag](
+case class RecordsTable[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler: FastTypeTag](
   name: String) extends Table[(Int, A, B)](name) {
   def keyHashCode = column[Int]("keyHashCode", O.PrimaryKey)
 
