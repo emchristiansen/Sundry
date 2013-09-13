@@ -16,8 +16,8 @@ import scala.slick.driver.SQLiteDriver.simple._
 
 ////////////////////////////////////////////////////////////////////////////////
 
-case class Blarg(a: Int, b: String)
-case class Flurg(a: Blarg, b: Double)
+case class MyKey(a: Int, b: String)
+case class MyValue(a: MyKey, b: Double)
 
 @RunWith(classOf[JUnitRunner])
 class TestPersistentMap extends FunGeneratorSuite {
@@ -26,15 +26,45 @@ class TestPersistentMap extends FunGeneratorSuite {
   test("a vanilla unit test", InstantTest) {
     val database = Database.forURL("jdbc:sqlite:db.sqlite", driver = "org.sqlite.JDBC")
 
-    val map = PersistentMap.create[Blarg, Flurg]("test", database)
+    val map = PersistentMap.create[MyKey, MyValue]("test", database)
 
-    val blarg1 = Blarg(1, "one")
-    val blarg2 = Blarg(2, "two")
+    val key1 = MyKey(1, "one")
+    val key2 = MyKey(2, "two")
     
-    val flurg1 = Flurg(blarg1, 1.0)
-    val flurg2 = Flurg(blarg2, 2.0)
+    val value1 = MyValue(key1, 1.0)
+    val value2 = MyValue(key2, 2.0)
     
-    map += (blarg1 -> flurg1)
+    val kv11 = key1 -> value1
+    val kv22 = key2 -> value2
+    val kv12 = key1 -> value2
+    
+    assert(map.get(key1) == None)
+    assert(map.get(key2) == None) 
+    assert(map.toSet == Set())
+    
+    map += kv11
+    
+    assert(map.get(key1) == Some(value1))
+    assert(map.get(key2) == None)
+    assert(map.toSet == Set(kv11))
+
+    map += kv22
+    
+    assert(map.get(key1) == Some(value1))
+    assert(map.get(key2) == Some(value2))
+    assert(map.toSet == Set(kv11, kv22))
+        
+    map -= key1
+    
+    assert(map.get(key1) == None)
+    assert(map.get(key2) == Some(value2))
+    assert(map.toSet == Set(kv22))
+    
+    map += kv12
+    
+    assert(map.get(key1) == Some(value2))
+    assert(map.get(key2) == Some(value2))
+    assert(map.toSet == Set(kv12, kv22))
   }
 
   test("a generator driven test", InstantTest) {

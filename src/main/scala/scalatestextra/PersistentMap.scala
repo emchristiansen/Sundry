@@ -2,47 +2,19 @@ package scalatestextra
 
 import scala.pickling._
 import scala.pickling.binary._
-
 import scala.slick.session.Database
-import Database.threadLocalSession
-import scala.slick.jdbc.{GetResult, StaticQuery}
+import scala.slick.session.Session
+import scala.slick.jdbc._
 import StaticQuery.interpolation
-
-//import scala.slick.driver.SQLiteDriver.simple._
-//import scala.slick.session.Database
-//import scala.slick.jdbc.StaticQuery
-//import scala.slick.driver.H2Driver.simple._
-//import Database.threadLocalSession
-
-//import scala.slick.lifted.MappedTypeMapper.base
-//import scala.slick.lifted.TypeMapper
-
-//import Database.threadLocalSession
-//import PickleToBytesMapper._
-//import scala.slick.jdbc.meta.MTable
+import scala.slick.jdbc.meta.MTable
+import scala.slick.session.PositionedParameters
+import scala.slick.session.PositionedResult
 
 ///////////////////////////////////////////
 
+case class TypeRecord(keyType: String, valueType: String)
 
-
-class TypeTable(name: String) extends Table[(String, String)](name) {
-  def keyType = column[String]("keyType")
-
-  def valueType = column[String]("valueType")
-
-  def * = keyType ~ valueType
-}
-
-class RecordsTable[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler: FastTypeTag](
-  name: String) extends Table[(Int, A, B)](name) {
-  def keyHashCode = column[Int]("keyHashCode", O.PrimaryKey)
-
-  def key = column[A]("key")
-
-  def value = column[B]("value")
-
-  def * = keyHashCode ~ key ~ value
-}
+case class KeyValueRecord[A, B](key: A, value: B)
 
 /**
  * A mutable map which is backed by a database.
@@ -54,10 +26,10 @@ class RecordsTable[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler: 
  * `database` holds the table in which this map is stored.
  */
 class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler: FastTypeTag](
-  name: String,
+  //  name: String,
   database: Database,
-  typeTable: TypeTable,
-  recordsTable: RecordsTable[A, B]) extends collection.mutable.Map[A, B] {
+  typeTableName: String,
+  recordsTableName: String) extends collection.mutable.Map[A, B] {
   // This table stores a single record, recording the type information
   // of this map.
   // It is used to verify the table the map connects to actually stores
@@ -70,39 +42,74 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
   // for efficient lookup.
   //  val recordsTable: RecordsTable[A, B]
 
+  implicit val getTypeRecordResult =
+    GetResult(r => TypeRecord(r.nextString, r.nextString))
+  implicit val getKeyValueRecordResult =
+    GetResult(r => KeyValueRecord(
+      BinaryPickle(r.nextBytes).unpickle[A],
+      BinaryPickle(r.nextBytes).unpickle[B]))
+
+  // These implicits come from
+  // https://github.com/slick/slick/issues/97
+  implicit object SetByteArray extends SetParameter[Array[Byte]] {
+    def apply(v: Array[Byte], pp: PositionedParameters) {
+      pp.setBytes(v)
+    }
+  }
+
+  implicit object SetByteArrayOption extends SetParameter[Option[Array[Byte]]] {
+    def apply(v: Option[Array[Byte]], pp: PositionedParameters) {
+      pp.setBytesOption(v)
+    }
+  }
+
+  implicit object GetByteArray extends GetResult[Array[Byte]] {
+    def apply(rs: PositionedResult) = rs.nextBytes()
+  }
+
+  implicit object GetByteArrayOption extends GetResult[Option[Array[Byte]]] {
+    def apply(rs: PositionedResult) = rs.nextBytesOption()
+  }
+
   // Do consistency checks on the two backing tables.
   database withSession { implicit session: Session =>
     // The type table:
     // 1) must exist,
-    require(MTable.getTables(typeTable.tableName).list().size == 1)
-    val entries = Query(typeTable).list
+    require(MTable.getTables(typeTableName).list().size == 1)
+    val entries = sql"select * from #$typeTableName".as[TypeRecord].list
     // 2) must have exactly one entry,
     require(entries.size == 1)
     // 3) and that entry must reflect the required type.
-    require(entries.head._1 == implicitly[FastTypeTag[A]].toString)
-    require(entries.head._2 == implicitly[FastTypeTag[B]].toString)
+    require(entries.head.keyType == implicitly[FastTypeTag[A]].toString)
+    require(entries.head.valueType == implicitly[FastTypeTag[B]].toString)
 
     // The records table must exist.
-    require(MTable.getTables(recordsTable.tableName).list().size == 1)
+    require(MTable.getTables(recordsTableName).list().size == 1)
   }
 
   override def get(key: A): Option[B] = {
     database withSession { implicit session: Session =>
       // We look up the key-value pair using the key's hash code.
-      val list = Query(recordsTable).filter(_.keyHashCode === key.hashCode).list
-      // `keyHashCode` is a primary key.
+      val pickledKey = key.pickle.value
+      val list =
+        sql"select * from #$recordsTableName where key = $pickledKey".as[KeyValueRecord[A, B]].list
+
+      // We should get either zero or one result.
       assert(list.size == 0 || list.size == 1)
-      list.headOption map { tuple =>
-        assert(tuple._2 == key)
-        tuple._3
-      }
+
+      list.headOption map { _.value }
     }
   }
 
   override def iterator: Iterator[(A, B)] = {
     database withSession { implicit session: Session =>
       // We simply return all the database entries, dropping the hash codes.
-      Query(recordsTable).elements map { tuple => (tuple._2, tuple._3) }
+      // TODO: Make this a proper enumerator by either using a newer
+      // version of Slick or by using the workaround described here:
+      // http://stackoverflow.com/questions/16728545/nullpointerexception-when-plain-sql-and-string-interpolation
+      sql"select * from #$recordsTableName".as[KeyValueRecord[A, B]].list.toIterator map {
+        record => (record.key, record.value)
+      }
     }
   }
 
@@ -113,7 +120,7 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
       this -= key
 
       // Then we insert our new record.
-      recordsTable.insert((key.hashCode, key, value))
+      sqlu"insert into #$recordsTableName values(${key.pickle.value}, ${value.pickle.value})".first
     }
 
     this
@@ -121,13 +128,7 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
 
   override def -=(key: A): this.type = {
     database withSession { implicit session: Session =>
-      val query =
-        Query(recordsTable).filter(_.keyHashCode === key.hashCode)
-
-      // `keyHashCode` is a primary key.
-      assert(query.list.size <= 1)
-
-      query.delete
+      sqlu"delete from #$recordsTableName where key = ${key.pickle.value}".first
     }
 
     this
@@ -143,33 +144,28 @@ object PersistentMap {
   def create[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler: FastTypeTag](
     name: String,
     database: Database): PersistentMap[A, B] = {
-    val typeTable = new TypeTable(name + "TypeTable")
-    val recordsTable = new RecordsTable[A, B](name + "RecordsTable")
+    val typeTableName = name + "TypeTable"
+    val recordsTableName = name + "RecordsTable"
 
     database withSession { implicit session: Session =>
-      // Initialize the type table.
-      if (!MTable.getTables(typeTable.tableName).elements.isEmpty)
-        typeTable.ddl.drop
+      // Initialize the type table.      
+      if (!MTable.getTables(typeTableName).elements.isEmpty)
+        sqlu"drop table #$typeTableName".first
 
-      typeTable.ddl.create
+      sqlu"create table #$typeTableName(keyType varchar not null, valueType varchar not null)".first
 
-      typeTable.insert((
-        implicitly[FastTypeTag[A]].toString,
-        implicitly[FastTypeTag[B]].toString))
+      val aString = implicitly[FastTypeTag[A]].toString
+      val bString = implicitly[FastTypeTag[B]].toString
+      sqlu"insert into #$typeTableName values($aString, $bString)".first
 
       // Initialize the records table.
-      if (!MTable.getTables(recordsTable.tableName).elements.isEmpty)
-        recordsTable.ddl.drop
+      if (!MTable.getTables(recordsTableName).elements.isEmpty)
+        sqlu"drop table #$recordsTableName".first
 
-      recordsTable.ddl.create
+      sqlu"create table #$recordsTableName(key blob not null primary key, value blob not null)".first
     }
-    
-//    // Make sure the tables were created as 
-//    database withSession { implicit session: Session =>
-//      assert(!MTable.getTables(typeTable.tableName).elements.isEmpty)
-//    }
-    
+
     // Build the final map.
-    new PersistentMap[A, B](name, database, typeTable, recordsTable)
+    new PersistentMap[A, B](database, typeTableName, recordsTableName)
   }
 }
