@@ -3,7 +3,12 @@ package scalatestextra
 import scala.pickling._
 import scala.pickling.binary._
 
-import scala.slick.driver.SQLiteDriver.simple._
+import scala.slick.session.Database
+import Database.threadLocalSession
+import scala.slick.jdbc.{GetResult, StaticQuery}
+import StaticQuery.interpolation
+
+//import scala.slick.driver.SQLiteDriver.simple._
 //import scala.slick.session.Database
 //import scala.slick.jdbc.StaticQuery
 //import scala.slick.driver.H2Driver.simple._
@@ -13,10 +18,12 @@ import scala.slick.driver.SQLiteDriver.simple._
 //import scala.slick.lifted.TypeMapper
 
 //import Database.threadLocalSession
-import PickleToBytesMapper._
-import scala.slick.jdbc.meta.MTable
+//import PickleToBytesMapper._
+//import scala.slick.jdbc.meta.MTable
 
 ///////////////////////////////////////////
+
+
 
 class TypeTable(name: String) extends Table[(String, String)](name) {
   def keyType = column[String]("keyType")
