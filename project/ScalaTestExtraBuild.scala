@@ -29,9 +29,10 @@ object ScalaTestExtraBuild extends Build {
       "junit" % "junit" % "4.11",
       "org.spire-math" %% "spire" % "0.5.0",
       "org.apache.commons" % "commons-io" % "1.3.2",
-      "com.typesafe.slick" %% "slick" % "1.0.1",
+      "com.typesafe.slick" %% "slick" % "2.0.0-M2",
       "org.slf4j" % "slf4j-nop" % "1.6.4",
       "com.h2database" % "h2" % "1.3.166",
+      "org.xerial" % "sqlite-jdbc" % "3.7.2",
       "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT"))
 
   def updateOnDependencyChange = Seq(
@@ -46,7 +47,7 @@ object ScalaTestExtraBuild extends Build {
       "-feature",
       "-language:implicitConversions",
       "-language:existentials",
-      "-language:reflectiveCalls",
+//      "-language:reflectiveCalls",
       "-language:postfixOps"))
 
   def moreSettings =
