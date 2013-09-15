@@ -12,6 +12,8 @@ import scala.pickling.binary._
 
 import scala.slick.driver.SQLiteDriver.simple._
 
+import scala.reflect.runtime.universe._
+
 ////////////////////////////////////////////////////////////////////////////////
 
 case class MyKey(a: Int, b: String)
@@ -20,8 +22,8 @@ case class MyValue(a: MyKey, b: Double)
 @RunWith(classOf[JUnitRunner])
 class TestPersistentMap extends FunGeneratorSuite {
   val pickleTable = PickleTable[Foo]("TestTable")
-
-  test("a vanilla unit test", InstantTest) {
+  
+  ignore("a vanilla unit test", InstantTest) {
     val database = Database.forURL("jdbc:sqlite:db.sqlite", driver = "org.sqlite.JDBC")
 
     val map = PersistentMap.create[MyKey, MyValue]("test", database)

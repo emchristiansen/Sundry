@@ -58,7 +58,8 @@ object ScalaTestExtraBuild extends Build {
       //      assemblySettings ++
       //      SbtStartScript.startScriptForJarSettings ++
       updateOnDependencyChange ++
-      publishSettings
+      publishSettings ++
+      Seq(fork := true)
 
   val projectName = "scalatest-extra"
   lazy val root = {
