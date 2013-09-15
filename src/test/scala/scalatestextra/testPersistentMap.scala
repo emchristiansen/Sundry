@@ -10,7 +10,7 @@ import org.scalatest.junit.JUnitRunner
 import scala.pickling._
 import scala.pickling.binary._
 
-import scala.slick.driver.SQLiteDriver.simple._
+import scala.slick.session.Database
 
 import scala.reflect.runtime.universe._
 
@@ -23,8 +23,20 @@ case class MyValue(a: MyKey, b: Double)
 class TestPersistentMap extends FunGeneratorSuite {
   val pickleTable = PickleTable[Foo]("TestTable")
   
-  ignore("a vanilla unit test", InstantTest) {
+  ignore("toString works", FastTest) {
     val database = Database.forURL("jdbc:sqlite:db.sqlite", driver = "org.sqlite.JDBC")
+//    val database = Database.forURL("jdbc:h2:db.h2", driver = "org.h2.Driver")
+
+    val map = PersistentMap.create[MyKey, MyValue]("testToString", database)
+    
+    // This should not crash.
+    map.toMap.toString
+  }
+  
+  test("acts like a map", InstantTest) {
+//    val database = Database.forURL("jdbc:sqlite:db.sqlite", driver = "org.sqlite.JDBC")
+//    val database = Database.forURL("jdbc:h2:db.h2", driver = "org.h2.Driver")
+    val database = Database.forURL("jdbc:mariadb://localhost:3306/test", driver = "org.mariadb.jdbc.Driver")
 
     val map = PersistentMap.create[MyKey, MyValue]("test", database)
 
