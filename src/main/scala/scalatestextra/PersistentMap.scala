@@ -14,7 +14,7 @@ import scala.slick.session.PositionedResult
 
 case class TypeRecord(keyType: String, valueType: String)
 
-case class KeyValueRecord[A, B](key: A, value: B)
+case class KeyValueRecord[A, B](keyHash: Long, key: A, value: B)
 
 object PersistentMapImplicits {
   // These implicits come from
@@ -66,6 +66,7 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
 
   private implicit val getKeyValueRecordResult =
     GetResult(r => KeyValueRecord(
+      r.nextLong,
       BinaryPickle(r.nextBytes).unpickle[A],
       BinaryPickle(r.nextBytes).unpickle[B]))
 
@@ -82,20 +83,24 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
     // 3) and that entry must reflect the required type.
     // TODO: Implement once FastTypeTag deserialization works.
     // https://github.com/scala/pickling/issues/32
-//    require(entries.head.keyType == implicitly[FastTypeTag[A]].toString)
-//    require(entries.head.valueType == implicitly[FastTypeTag[B]].toString,
-//      s"${entries.head.valueType} == ${implicitly[FastTypeTag[B]].toString}")
+    //    require(entries.head.keyType == implicitly[FastTypeTag[A]].toString)
+    //    require(entries.head.valueType == implicitly[FastTypeTag[B]].toString,
+    //      s"${entries.head.valueType} == ${implicitly[FastTypeTag[B]].toString}")
 
     // The records table must exist.
     require(MTable.getTables(recordsTableName).list().size == 1)
   }
 
+  private def hashKey(key: A): Long =
+    // TODO: Make this return a proper `Long`, otherwise this is going
+    // to be a problem eventually
+    key.hashCode
+
   override def get(key: A): Option[B] = {
     database withSession { implicit session: Session =>
       // We look up the key-value pair using the key's hash code.
-      val pickledKey = key.pickle.value
       val list =
-        sql"select * from #$recordsTableName where key = $pickledKey".as[KeyValueRecord[A, B]].list
+        sql"select * from #$recordsTableName where keyHash = ${hashKey(key)}".as[KeyValueRecord[A, B]].list
 
       // We should get either zero or one result.
       assert(list.size == 0 || list.size == 1)
@@ -123,7 +128,7 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
       this -= key
 
       // Then we insert our new record.
-      sqlu"insert into #$recordsTableName values(${key.pickle.value}, ${value.pickle.value})".first
+      sqlu"insert into #$recordsTableName values(${hashKey(key)}, ${key.pickle.value}, ${value.pickle.value})".first
     }
 
     this
@@ -131,7 +136,7 @@ class PersistentMap[A: SPickler: Unpickler: FastTypeTag, B: SPickler: Unpickler:
 
   override def -=(key: A): this.type = {
     database withSession { implicit session: Session =>
-      sqlu"delete from #$recordsTableName where key = ${key.pickle.value}".first
+      sqlu"delete from #$recordsTableName where keyHash = ${hashKey(key)}".first
     }
 
     this
@@ -177,7 +182,7 @@ object PersistentMap {
       if (!MTable.getTables(recordsTableName).elements.isEmpty)
         sqlu"drop table #$recordsTableName".first
 
-      sqlu"create table #$recordsTableName(key blob not null primary key, value blob not null)".first
+      sqlu"create table #$recordsTableName(keyHash bigint not null primary key, keyData blob not null, valueData blob not null)".first
     }
 
     // Build the final map.
