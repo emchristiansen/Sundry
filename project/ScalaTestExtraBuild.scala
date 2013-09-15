@@ -33,6 +33,7 @@ object ScalaTestExtraBuild extends Build {
       "org.slf4j" % "slf4j-nop" % "1.6.4",
       "com.h2database" % "h2" % "1.3.166",
       "org.xerial" % "sqlite-jdbc" % "3.7.2",
+      "org.jumpmind.symmetric.jdbc" % "mariadb-java-client" % "1.1.1",
       "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT"))
 
   def updateOnDependencyChange = Seq(
@@ -58,7 +59,8 @@ object ScalaTestExtraBuild extends Build {
       //      assemblySettings ++
       //      SbtStartScript.startScriptForJarSettings ++
       updateOnDependencyChange ++
-      publishSettings
+      publishSettings ++
+      Seq(fork := true)
 
   val projectName = "scalatest-extra"
   lazy val root = {
