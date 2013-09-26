@@ -18,13 +18,13 @@ object ScalaTestExtraBuild extends Build {
     organization := "emchristiansen",
     publishMavenStyle := false,
     publishTo := Some(Resolver.file("file", new File("./releases"))),
-    version := "0.2-SNAPSHOT")
+    version := "0.3-SNAPSHOT")
 
-  val scalaVersionString = "2.10.2"
+  val scalaVersionString = "2.10.3-RC3"
 
   def extraLibraryDependencies = Seq(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "2.0.M5b",
+      "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP4",
       "org.scalacheck" %% "scalacheck" % "1.10.1",
       "junit" % "junit" % "4.11",
       "org.spire-math" %% "spire" % "0.5.0",
@@ -34,6 +34,8 @@ object ScalaTestExtraBuild extends Build {
       "com.h2database" % "h2" % "1.3.166",
       "org.xerial" % "sqlite-jdbc" % "3.7.2",
       "org.jumpmind.symmetric.jdbc" % "mariadb-java-client" % "1.1.1",
+       "joda-time" % "joda-time" % "2.3",
+       "org.joda" % "joda-convert" % "1.5",
       "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT"))
 
   def updateOnDependencyChange = Seq(
