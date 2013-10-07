@@ -1,18 +1,11 @@
 import sbt._
 import Keys._
 
-//import sbtassembly.Plugin._
-//import AssemblyKeys._
-//
-//import com.typesafe.sbt.SbtStartScript
-
-object ScalaTestExtraBuild extends Build {
+object SundryBuild extends Build {
   def extraResolvers = Seq(
     resolvers ++= Seq(
-      "Sonatype OSS Releases" at "http://oss.sonatype.org/content/repositories/releases/",
-      "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
-      "Local Maven Repository" at Path.userHome.asFile.toURI.toURL + "/.m2/repository",
-      Resolver.url("emchristiansen-scalatest-extra", url("https://raw.github.com/emchristiansen/scalatest-extra/master/releases"))(Patterns("[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))))
+        Resolver.sonatypeRepo("releases"),
+        Resolver.sonatypeRepo("snapshots"))
 
   val publishSettings = Seq(
     organization := "emchristiansen",
@@ -20,7 +13,7 @@ object ScalaTestExtraBuild extends Build {
     publishTo := Some(Resolver.file("file", new File("./releases"))),
     version := "0.3-SNAPSHOT")
 
-  val scalaVersionString = "2.10.3-RC3"
+  val scalaVersionString = "2.10.3"
 
   def extraLibraryDependencies = Seq(
     libraryDependencies ++= Seq(
