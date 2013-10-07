@@ -1,4 +1,4 @@
-package scalatestextra
+package st.sparse.sundry
 
 import java.io.File
 import org.apache.commons.io.FileUtils

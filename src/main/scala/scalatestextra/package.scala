@@ -1,1 +1,0 @@
-package object scalatestextra extends Near with StandardImplicits

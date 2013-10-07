@@ -1,4 +1,4 @@
-package scalatestextra
+package st.sparse.sundry
 
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers

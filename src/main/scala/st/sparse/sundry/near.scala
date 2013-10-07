@@ -1,4 +1,4 @@
-package scalatestextra
+package st.sparse.sundry
 
 import spire.algebra._
 import spire.math._

@@ -1,4 +1,4 @@
-package scalatestextra
+package st.sparse.sundry
 
 ////////////////////////////////////////////////
 

@@ -4,14 +4,49 @@ import Keys._
 object SundryBuild extends Build {
   def extraResolvers = Seq(
     resolvers ++= Seq(
-        Resolver.sonatypeRepo("releases"),
-        Resolver.sonatypeRepo("snapshots"))
+      Resolver.sonatypeRepo("releases"),
+      Resolver.sonatypeRepo("snapshots")))
+
+  val projectName = "Sundry"
+  val mavenName = "sundry"
 
   val publishSettings = Seq(
-    organization := "emchristiansen",
-    publishMavenStyle := false,
-    publishTo := Some(Resolver.file("file", new File("./releases"))),
-    version := "0.3-SNAPSHOT")
+    name := mavenName,
+
+    version := "0.1-SNAPSHOT",
+
+    organization := "st.sparse",
+
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (version.value.trim.endsWith("SNAPSHOT"))
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+
+    publishMavenStyle := true,
+
+    publishArtifact in Test := false,
+
+    pomIncludeRepository := { _ => false },
+
+    licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
+
+    homepage := Some(url("https://github.com/emchristiansen/Sundry")),
+
+    pomExtra := (
+      <scm>
+        <url>git@github.com:emchristiansne/Sundry.git</url>
+        <connection>scm:git:git@github.com:emchristiansen/Sundry.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>emchristiansen</id>
+          <name>Eric Christiansen</name>
+          <url>http://sparse.st</url>
+        </developer>
+      </developers>))
 
   val scalaVersionString = "2.10.3"
 
@@ -20,16 +55,15 @@ object SundryBuild extends Build {
       "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP4",
       "org.scalacheck" %% "scalacheck" % "1.10.1",
       "junit" % "junit" % "4.11",
-      "org.spire-math" %% "spire" % "0.5.0",
-      "org.apache.commons" % "commons-io" % "1.3.2"
-//      "com.typesafe.slick" %% "slick" % "1.0.1",
-//      "org.slf4j" % "slf4j-nop" % "1.6.4",
-//      "com.h2database" % "h2" % "1.3.166",
-//      "org.xerial" % "sqlite-jdbc" % "3.7.2",
-//      "org.jumpmind.symmetric.jdbc" % "mariadb-java-client" % "1.1.1",
-//       "joda-time" % "joda-time" % "2.3",
-//       "org.joda" % "joda-convert" % "1.5",
-//      "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT"
+      "org.spire-math" %% "spire" % "0.6.0",
+      "org.apache.commons" % "commons-io" % "1.3.2" //      "com.typesafe.slick" %% "slick" % "1.0.1",
+      //      "org.slf4j" % "slf4j-nop" % "1.6.4",
+      //      "com.h2database" % "h2" % "1.3.166",
+      //      "org.xerial" % "sqlite-jdbc" % "3.7.2",
+      //      "org.jumpmind.symmetric.jdbc" % "mariadb-java-client" % "1.1.1",
+      //       "joda-time" % "joda-time" % "2.3",
+      //       "org.joda" % "joda-convert" % "1.5",
+      //      "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT"
       ))
 
   def updateOnDependencyChange = Seq(
@@ -44,7 +78,7 @@ object SundryBuild extends Build {
       "-feature",
       "-language:implicitConversions",
       "-language:existentials",
-//      "-language:reflectiveCalls",
+      //      "-language:reflectiveCalls",
       "-language:postfixOps"))
 
   def moreSettings =
@@ -55,12 +89,10 @@ object SundryBuild extends Build {
       //      assemblySettings ++
       //      SbtStartScript.startScriptForJarSettings ++
       updateOnDependencyChange ++
-      publishSettings ++
-      Seq(fork := true)
+      publishSettings
 
-  val projectName = "scalatest-extra"
   lazy val root = {
-    val settings = moreSettings ++ Seq(name := projectName, fork := true)
+    val settings = moreSettings ++ Seq(fork := true)
     Project(id = projectName, base = file("."), settings = settings)
   }
 }

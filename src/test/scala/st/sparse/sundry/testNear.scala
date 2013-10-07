@@ -1,4 +1,4 @@
-package scalatestextra
+package st.sparse.sundry
 
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
@@ -10,6 +10,12 @@ import org.scalatest.junit.JUnitRunner
 ////////////////////////////////////////////////////////////////////////////////
 
 @RunWith(classOf[JUnitRunner])
-class TestPackage extends FunGeneratorSuite {
-
+class TestNear extends FunGeneratorSuite {
+  test("standard types", InstantTest) {
+    assertNear(0, 0)
+    assertNear(1.1, 1.10000000001)
+    intercept[AssertionError] {
+      assertNear(1.1, 1.2)
+    }
+  }
 }
