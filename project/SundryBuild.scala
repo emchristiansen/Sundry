@@ -52,7 +52,7 @@ object SundryBuild extends Build {
 
   def extraLibraryDependencies = Seq(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP4",
+      "org.scalatest" %% "scalatest" % "1.9.2",
       "org.scalacheck" %% "scalacheck" % "1.10.1",
       "junit" % "junit" % "4.11",
       "org.spire-math" %% "spire" % "0.6.0",
