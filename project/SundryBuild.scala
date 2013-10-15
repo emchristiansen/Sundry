@@ -37,7 +37,7 @@ object SundryBuild extends Build {
 
     pomExtra := (
       <scm>
-        <url>git@github.com:emchristiansne/Sundry.git</url>
+        <url>git@github.com:emchristiansen/Sundry.git</url>
         <connection>scm:git:git@github.com:emchristiansen/Sundry.git</connection>
       </scm>
       <developers>
