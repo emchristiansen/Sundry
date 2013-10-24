@@ -13,7 +13,7 @@ object SundryBuild extends Build {
   val publishSettings = Seq(
     name := mavenName,
 
-    version := "0.1-SNAPSHOT",
+    version := "0.1.1-SNAPSHOT",
 
     organization := "st.sparse",
 
@@ -52,10 +52,13 @@ object SundryBuild extends Build {
 
   def extraLibraryDependencies = Seq(
     libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersionString,
+      "org.scala-lang" % "scala-compiler" % scalaVersionString,
       "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP6",
       "org.scalacheck" %% "scalacheck" % "1.10.1",
       "junit" % "junit" % "4.11",
       "org.spire-math" %% "spire" % "0.6.0",
+      "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT",
       "org.apache.commons" % "commons-io" % "1.3.2" //      "com.typesafe.slick" %% "slick" % "1.0.1",
       //      "org.slf4j" % "slf4j-nop" % "1.6.4",
       //      "com.h2database" % "h2" % "1.3.166",

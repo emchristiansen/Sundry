@@ -1,3 +1,3 @@
 package st.sparse
 
-package object sundry extends st.sparse.sundry.Near with st.sparse.sundry.StandardImplicits
+package object sundry extends sundry.Near with sundry.StandardImplicits with sundry.Reflect
