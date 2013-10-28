@@ -19,5 +19,10 @@ trait StandardDefinitions {
       (a, b) => function1(function2(a, b))
   }
   
+  /**
+   * The user home directory.
+   * 
+   * The directory must exist.
+   */
   val userHome = ExistingDirectory(System.getProperty("user.home"))
 }
