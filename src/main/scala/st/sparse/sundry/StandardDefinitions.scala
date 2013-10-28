@@ -2,7 +2,7 @@ package st.sparse.sundry
 
 //////////////////////////////////////////
 
-trait StandardImplicits {
+trait StandardDefinitions {
   /**
    * "5 times println("hello")" prints "hello" 5 times.
    */
@@ -18,4 +18,6 @@ trait StandardImplicits {
     def compose[A, B](function2: (A, B) => T1): (A, B) => R =
       (a, b) => function1(function2(a, b))
   }
+  
+  val userHome = ExistingDirectory(System.getProperty("user.home"))
 }
