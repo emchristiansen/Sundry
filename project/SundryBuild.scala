@@ -5,7 +5,8 @@ object SundryBuild extends Build {
   def extraResolvers = Seq(
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
-      Resolver.sonatypeRepo("snapshots")))
+      Resolver.sonatypeRepo("snapshots"),
+      "Expecty Repository" at "https://raw.github.com/pniederw/expecty/master/m2repo/"))
 
   val projectName = "Sundry"
   val mavenName = "sundry"
