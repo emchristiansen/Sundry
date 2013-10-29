@@ -3,6 +3,7 @@ package st.sparse.sundry
 import spire.algebra._
 import spire.math._
 import spire.implicits._
+import ExpectyOverrides._
 
 ///////////////////////////////////////////////////////////
 
@@ -48,11 +49,7 @@ trait Near extends IsNearMethods {
     require(left > 0)
     require(right > 0)
 
-    assert(
-      left / right <= maxRatio,
-      s"${left} / ${right} = ${left / right} > ${maxRatio}")
-    assert(
-      right / left <= maxRatio,
-      s"${right} / ${left} = ${right / left} > ${maxRatio}")
+    assert(left / right <= maxRatio)
+    assert(right / left <= maxRatio)
   }
 }

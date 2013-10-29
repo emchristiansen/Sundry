@@ -23,11 +23,8 @@ trait FunGeneratorConfigSuite extends fixture.FunSuite with fixture.ConfigMapFix
  * access to additional data.
  */
 trait DataTest {
-  def dataRoot(implicit configMap: Map[String, Any]): File = { 
-    val file = new File(configMap("dataRoot").toString)
-    assert(file.isDirectory)
-    file
-  }
+  def dataRoot(implicit configMap: Map[String, Any]): ExistingDirectory =
+    ExistingDirectory(new File(configMap("dataRoot").toString))
 }
 
 /**
@@ -35,9 +32,6 @@ trait DataTest {
  * interactive tests which log images and require the user to eyeball them.
  */
 trait LoggingTest {
-  def logRoot(implicit configMap: Map[String, Any]): File = { 
-    val file = new File(configMap("logRoot").toString)
-    assert(file.isDirectory)
-    file
-  }
+  def logRoot(implicit configMap: Map[String, Any]): File =
+    ExistingDirectory(new File(configMap("logRoot").toString))
 }
