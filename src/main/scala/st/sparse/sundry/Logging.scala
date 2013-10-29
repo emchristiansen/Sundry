@@ -2,6 +2,7 @@ package st.sparse.sundry
 
 import com.sksamuel.scrimage.Image
 import java.io.File
+import ExpectyOverrides._
 
 /**
  * Adds some useful features to `Logging`.

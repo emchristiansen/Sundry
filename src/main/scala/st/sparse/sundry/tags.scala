@@ -11,29 +11,29 @@ import org.scalatest.Tag
 /**
  * Tests which run for less than 0.1s.
  */
-object InstantTest extends Tag("nebula.InstantTest")
+object InstantTest extends Tag("InstantTest")
 
 /**
  * Tests which run for less than 1s.
  */
-object FastTest extends Tag("nebula.FastTest")
+object FastTest extends Tag("FastTest")
 
 /**
  * Tests which run for less than 10s.
  */
-object MediumTest extends Tag("nebula.MediumTest")
+object MediumTest extends Tag("MediumTest")
 
 /**
  * Tests which run for less than 100s.
  */
-object SlowTest extends Tag("nebula.SlowTest")
+object SlowTest extends Tag("SlowTest")
 
 /**
  * Test which require the user to inspect or do something (not fully automatic).
  */
-object InteractiveTest extends Tag("nebula.InteractiveTest")
+object InteractiveTest extends Tag("InteractiveTest")
 
 /**
  * Tests which require an external dataset.
  */
-object DatasetTest extends Tag("nebula.DatasetTest")
+object DatasetTest extends Tag("DatasetTest")

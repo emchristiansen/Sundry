@@ -7,7 +7,7 @@ import org.expecty.Expecty
  * 
  * To use, just import the contents of this object.
  */
-object ExpectyOverloads {
+object ExpectyOverrides {
   val require = new Expecty()
   val assert = new Expecty()
 }
