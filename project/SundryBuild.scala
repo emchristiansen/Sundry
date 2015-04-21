@@ -14,7 +14,7 @@ object SundryBuild extends Build {
   val publishSettings = Seq(
     name := mavenName,
 
-    version := "0.1.2-SNAPSHOT",
+    version := "0.1.3-SNAPSHOT",
 
     organization := "st.sparse",
 
@@ -49,21 +49,23 @@ object SundryBuild extends Build {
         </developer>
       </developers>))
 
-  val scalaVersionString = "2.10.3"
+  val scalaVersionString = "2.11.6"
 
   def extraLibraryDependencies = Seq(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersionString,
       "org.scala-lang" % "scala-compiler" % scalaVersionString,
-      "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP6",
-      "org.scalacheck" %% "scalacheck" % "1.10.1",
-      "junit" % "junit" % "4.11",
-      "org.spire-math" %% "spire" % "0.6.0",
-      "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT",
-      "com.sksamuel.scrimage" %% "scrimage-core" % "1.3.7",
-      "com.typesafe" %% "scalalogging-slf4j" % "1.0.1",
-      "org.expecty" % "expecty" % "0.9",
-      "org.apache.commons" % "commons-io" % "1.3.2" //      "com.typesafe.slick" %% "slick" % "1.0.1",
+			"org.scalatest" %% "scalatest" % "2.2.4",
+      "org.scalacheck" %% "scalacheck" % "1.12.2",
+      "junit" % "junit" % "4.12",
+      "org.spire-math" %% "spire" % "0.9.1",
+      "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
+      "com.sksamuel.scrimage" %% "scrimage-core" % "1.4.2",
+      // "com.typesafe" %% "scalalogging-slf4j" % "1.0.1",
+			 "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
+      "org.expecty" % "expecty" % "0.10",
+      "commons-io" % "commons-io" % "2.4"
+      //      "com.typesafe.slick" %% "slick" % "1.0.1",
       //      "org.slf4j" % "slf4j-nop" % "1.6.4",
       //      "com.h2database" % "h2" % "1.3.166",
       //      "org.xerial" % "sqlite-jdbc" % "3.7.2",

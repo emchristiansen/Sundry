@@ -7,7 +7,7 @@ import ExpectyOverrides._
 /**
  * Adds some useful features to `Logging`.
  */
-trait Logging extends com.typesafe.scalalogging.slf4j.Logging {
+trait Logging extends com.typesafe.scalalogging.LazyLogging {
   def className = this.getClass.getName
 
   /**
